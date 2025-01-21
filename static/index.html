@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elective Recommendation</title>
+    <link rel="stylesheet" href="style.css">
+    
+</head>
+<body>
+    <div class="container">
+        <img src="C:\Users\anaiza\OneDrive\Desktop\Elective Prediction Model\logo.png" alt="logo">
+        <h1>Elective Recommendation System</h1>
+        <form id="recommendationForm">
+            <label for="studentId">Student ID:</label>
+            <input type="text" id="studentId" placeholder="Enter your Student ID" required>
+            
+            <label for="electiveOptions">Elective Options (comma-separated):</label>
+            <textarea id="electiveOptions" placeholder="e.g., AI and ML, Blockchain" required></textarea>
+            
+            <button type="submit">Get Recommendation</button>
+        </form>
+        <div id="result" class="result" style="display: none;"></div>
+    </div>
+
+    <script>
+        document.getElementById('recommendationForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const studentId = document.getElementById('studentId').value;
+            const electiveOptions = document.getElementById('electiveOptions').value.split(',');
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/api/recommend', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        student_id: studentId,
+                        elective_options: electiveOptions
+                    })
+                });
+
+                const data = await response.json();
+                const resultDiv = document.getElementById('result');
+                resultDiv.style.display = 'block';
+
+                if (data.error) {
+                    resultDiv.textContent = `Error: ${data.error}`;
+                } else {
+                    resultDiv.textContent = `Recommended Elective: ${data.recommended_elective}`;
+                }
+            } catch (error) {
+                console.error(error);
+                alert('An error occurred while fetching the recommendation.');
+            }
+        });
+    </script>
+</body>
+</html>
